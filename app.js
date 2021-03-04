@@ -59,29 +59,52 @@ const chao = {
     },
 };
 
-const flappyBird = {
-    spriteX: 0,
-    spriteY: 0,
-    largura: 33,
-    altura: 24,
-    x: 10,
-    y: 50,
-    gravidade: 0.25,
-    velocidade: 0,
-    atualiza(){
-        this.velocidade += this.gravidade 
-        this.y = this.y + this.velocidade;
-    },
-    desenha() {
-        contexto.drawImage(
-            sprites,
-            this.spriteX, this.spriteY,
-            this.largura, this.altura,
-            this.x, this.y,
-            this.largura, this.altura,
-        ); 
+function fazColisao(flappyBird, chao) {
+    const flappyBirdY = flappyBird.y + flappyBird.altura;
+    const chaoY = chao.y;
+
+    if(flappyBirdY >= chaoY) {
+        return true
     }
+
+    return false;
 }
+
+function criaFlappyBird() {
+    const flappyBird = {
+        spriteX: 0,
+        spriteY: 0,
+        largura: 33,
+        altura: 24,
+        x: 10,
+        y: 50,
+        gravidade: 0.25,
+        velocidade: 0,
+        pulo: 4.6,
+        pula(){
+            this.velocidade = - flappyBird.pulo;
+        },
+        atualiza(){
+            if(fazColisao(flappyBird, chao)){
+                mudaParaTela(Telas.inicio)
+                return;
+            } 
+            this.velocidade += this.gravidade 
+            this.y = this.y + this.velocidade;
+        },
+        desenha() {
+            contexto.drawImage(
+                sprites,
+                this.spriteX, this.spriteY,
+                this.largura, this.altura,
+                this.x, this.y,
+                this.largura, this.altura,
+            ); 
+        }
+    };
+
+    return flappyBird;
+};
 
 const mensagemGetReady = {
     spriteX: 134,
@@ -101,18 +124,26 @@ const mensagemGetReady = {
     }
 }
 
+const globais = {};
 let telaAtiva = {};
 
 function mudaParaTela(novaTela) {
     telaAtiva = novaTela;
+
+    if(telaAtiva.inicializa){
+        telaAtiva.inicializa();
+    }
 }
 
 const Telas = {
     inicio: {
+        inicializa(){
+            globais.flappyBird = criaFlappyBird();
+        },
         desenha() {
             planoDeFundo.desenha();
             chao.desenha();
-            flappyBird.desenha();
+            globais.flappyBird.desenha();
             mensagemGetReady.desenha();
         },
         click() {
@@ -126,10 +157,13 @@ const Telas = {
         desenha() {
             planoDeFundo.desenha();
             chao.desenha();
-            flappyBird.desenha();
+            globais.flappyBird.desenha();
+        },
+        click() {
+            globais.flappyBird.pula();
         },
         atualiza() {
-            flappyBird.atualiza();
+            globais.flappyBird.atualiza();
         },
     }
 }
