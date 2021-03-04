@@ -17,18 +17,18 @@ const planoDeFundo = {
 
         contexto.drawImage(
             sprites,
-            planoDeFundo.spriteX, planoDeFundo.spriteY,
-            planoDeFundo.largura, planoDeFundo.altura,
-            planoDeFundo.x, planoDeFundo.y,
-            planoDeFundo.largura, planoDeFundo.altura,
+            this.spriteX, this.spriteY,
+            this.largura, this.altura,
+            this.x, this.y,
+            this.largura, this.altura,
         );
 
         contexto.drawImage(
             sprites,
-            planoDeFundo.spriteX, planoDeFundo.spriteY,
-            planoDeFundo.largura, planoDeFundo.altura,
-            (planoDeFundo.x + planoDeFundo.largura), planoDeFundo.y,
-            planoDeFundo.largura, planoDeFundo.altura,
+            this.spriteX, this.spriteY,
+            this.largura, this.altura,
+            (this.x + this.largura), this.y,
+            this.largura, this.altura,
         );
     },
 }
@@ -43,18 +43,18 @@ const chao = {
     desenha() {
         contexto.drawImage(
             sprites,
-            chao.spriteX, chao.spriteY,
-            chao.largura, chao.altura,
-            chao.x, chao.y,
-            chao.largura, chao.altura,
+            this.spriteX, this.spriteY,
+            this.largura, this.altura,
+            this.x, this.y,
+            this.largura, this.altura,
         );
 
         contexto.drawImage(
             sprites,
-            chao.spriteX, chao.spriteY,
-            chao.largura, chao.altura,
-            (chao.x + chao.largura), chao.y,
-            chao.largura, chao.altura,
+            this.spriteX, this.spriteY,
+            this.largura, this.altura,
+            (this.x + this.largura), this.y,
+            this.largura, this.altura,
         );
     },
 };
@@ -75,25 +75,77 @@ const flappyBird = {
     desenha() {
         contexto.drawImage(
             sprites,
-            flappyBird.spriteX, flappyBird.spriteY,
-            flappyBird.largura, flappyBird.altura,
-            flappyBird.x, flappyBird.y,
-            flappyBird.largura, flappyBird.altura,
-        );
-        
+            this.spriteX, this.spriteY,
+            this.largura, this.altura,
+            this.x, this.y,
+            this.largura, this.altura,
+        ); 
     }
 }
 
-console.log(flappyBird);
+const mensagemGetReady = {
+    spriteX: 134,
+    spriteY: 0,
+    largura: 174,
+    altura: 152,
+    x: (canvas.width / 2) - 174 / 2,
+    y: 50,
+    desenha() {
+        contexto.drawImage(
+            sprites,
+            this.spriteX, this.spriteY,
+            this.largura, this.altura,
+            this.x, this.y,
+            this.largura, this.altura,
+        );
+    }
+}
+
+let telaAtiva = {};
+
+function mudaParaTela(novaTela) {
+    telaAtiva = novaTela;
+}
+
+const Telas = {
+    inicio: {
+        desenha() {
+            planoDeFundo.desenha();
+            chao.desenha();
+            flappyBird.desenha();
+            mensagemGetReady.desenha();
+        },
+        click() {
+            mudaParaTela(Telas.jogo);
+        },
+        atualiza() {
+
+        }
+    },
+    jogo: {
+        desenha() {
+            planoDeFundo.desenha();
+            chao.desenha();
+            flappyBird.desenha();
+        },
+        atualiza() {
+            flappyBird.atualiza();
+        },
+    }
+}
 
 function loop() {
-    flappyBird.atualiza();
-    planoDeFundo.desenha();
-    chao.desenha();
-    flappyBird.desenha();
 
+    telaAtiva.desenha();
+    telaAtiva.atualiza();
 
     requestAnimationFrame(loop);
 }
 
+window.addEventListener('click', function(){
+    if(telaAtiva.click){
+        telaAtiva.click();
+    }
+})
+mudaParaTela(Telas.inicio)
 loop();
